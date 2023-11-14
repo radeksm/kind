@@ -91,9 +91,9 @@ func runE(logger log.Logger, flags *flagpole, args []string) error {
 	imageNames := removeDuplicates(args)
 	var imageIDs []string
 	for _, imageName := range imageNames {
-		imageID, err := imageID(imageName)
+		imageID, err := provider.GetImageIDByName(imageName)
 		if err != nil {
-			return fmt.Errorf("image: %q not present locally", imageName)
+			return fmt.Errorf("image: %q not present locally, %v", imageName, err)
 		}
 		imageIDs = append(imageIDs, imageID)
 	}
@@ -209,22 +209,6 @@ func loadImage(imageTarName string, node nodes.Node) error {
 func save(images []string, dest string) error {
 	commandArgs := append([]string{"save", "-o", dest}, images...)
 	return exec.Command("docker", commandArgs...).Run()
-}
-
-// imageID return the Id of the container image
-func imageID(containerNameOrID string) (string, error) {
-	cmd := exec.Command("docker", "image", "inspect",
-		"-f", "{{ .Id }}",
-		containerNameOrID, // ... against the container
-	)
-	lines, err := exec.OutputLines(cmd)
-	if err != nil {
-		return "", err
-	}
-	if len(lines) != 1 {
-		return "", errors.Errorf("Docker image ID should only be one line, got %d lines", len(lines))
-	}
-	return lines[0], nil
 }
 
 // removeDuplicates removes duplicates from a string slice

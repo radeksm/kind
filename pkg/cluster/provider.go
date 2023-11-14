@@ -244,3 +244,11 @@ func (p *Provider) CollectLogs(name, dir string) error {
 	// collect and write cluster logs
 	return p.provider.CollectLogs(dir, n)
 }
+
+func (p *Provider) GetImageIDByName(containerNameOrID string) (string, error) {
+	imgID, err := p.provider.GetImageIDByName(containerNameOrID)
+	if err != nil {
+		return "", err
+	}
+	return imgID, nil
+}

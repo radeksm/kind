@@ -342,3 +342,19 @@ func info() (*providers.ProviderInfo, error) {
 	}
 	return &info, nil
 }
+
+// GetImageIDByName return the Id of the container image
+func (p *provider) GetImageIDByName(containerNameOrID string) (string, error) {
+	cmd := exec.Command("docker", "image", "inspect",
+		"-f", "{{ .Id }}",
+		containerNameOrID, // ... against the container
+	)
+	lines, err := exec.OutputLines(cmd)
+	if err != nil {
+		return "", err
+	}
+	if len(lines) != 1 {
+		return "", errors.Errorf("Docker image ID should only be one line, got %d lines", len(lines))
+	}
+	return lines[0], nil
+}

@@ -47,6 +47,8 @@ type Provider interface {
 	CollectLogs(dir string, nodes []nodes.Node) error
 	// Info returns the provider info
 	Info() (*ProviderInfo, error)
+	// GetImageIDByName returns container image ID
+	GetImageIDByName(containerNameOrID string) (string, error)
 }
 
 // ProviderInfo is the info of the provider
